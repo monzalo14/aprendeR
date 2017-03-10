@@ -1,0 +1,73 @@
+---
+title: "Tarea 4"
+author: "Mónica Zamudio"
+date: "10 de marzo de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Ayuda: algunas librerías a importar (si no las tienes, sólo necesitas instalarlas)
+```{r}
+library(readr)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(stringr)
+```
+
+Tu tarea consiste en tomar la base que tienes en tu mail y limpiarla como se indica en este documento. Si surgen muchas dudas sobre los ejercicios, puedes preguntarme, usar la documentación de las funciones (**?grepl**, por ejemplo) preguntarle a Google ([stackoverflow](http://stackoverflow.com/) puede volverse tu mejor amigo).
+
+El documento incluye un poco de código de ayuda para las primeras funciones y para cargar la base. El resto debes hacerlo tú. Recuerda que tu base tiene que estar en el mismo directorio en el que estés trabajando. De lo contrario, R no va a encontrarla.
+
+**Ayuda:** código de limpiar fechas. Puntos adicionales si describes qué hace esta función.
+
+```{r}
+limpia_fechas <- function(date){
+  fecha <- as.Date(as.numeric(date), origin="1899-12-30")
+  fecha[grepl("\\/", date)] <- dmy(date[grepl("\\/", date)])
+  fecha
+}
+```
+
+**Ayuda:** código para leer la base. Puntos adicionales si describes qué hace este código.
+*Aclaración: mutate_each es la versión vieja de mutate_all*.
+
+```{r}
+df <- read.csv('base_iniciales.csv', as.is = T) %>%
+  dplyr::select(., clave:dummy_nulidad, fecha_termino:liq_total_tope) %>%
+  mutate_each(., funs(limpia_fechas), 
+              contains("fecha"), -contains("vac"), -contains("ag")) 
+```
+
+## Codemanda IMSS:
+
+Crea una tabla que contenga id_exp y una dummy de si se codemanda o no al IMSS o al INFONAVIT.
+*Hint:* podrías colapsar todos los demandados en una sola columna y usar alguna función que te diga si una expresión está o no en un string.
+
+Puntos extra si averiguas cómo unir esta tabla con la base que ya tienes (: 
+*Hint:* revisa [esta página](http://stat545.com/bit001_dplyr-cheatsheet.html).
+
+## Terminaciones y cuantificaciones:
+
+- Limpia las variables con "c_", las variables con "monto", la liq_total y el salario, para que sean variables numéricas y no tengan valores negativos. *Hint:* probablemente sea útil crear una función para limpiarlas y aplicársela a todas las variables que necesites.
+
+- Crea una variable que sea la razón entre c_total y min_ley (esta la usamos como un proxy de exageración)
+
+- Sustituye con NA las dummies que no sean 0,1 y las observaciones con modo de término que no sea 1,2,3, o 4.
+
+- ¿Cómo harías para crear una variable que sea la proporción de c_total que son las horas extra? Hint: la variable c_hextra puede ayudar.
+
+## Top despachos
+
+- Crea una tabla con los despachos y las frecuencias con las que aparecen en la base.
+
+- ¿Cómo harías para crear una dummy de "top_despacho" en la base?
+
+## Último ejercicio
+
+- Filtra los expedientes para quedarte sólo con las acciones principales de reinstalación e indemnización.
+
+- Guarda tus resultados en un RDS o csv. Una recomendación: guárdalo con un nombre que implique que los datos ya están limpios.

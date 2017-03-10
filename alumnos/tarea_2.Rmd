@@ -10,11 +10,50 @@ Usa la base `mtcars`.
  
 - Dame un data frame con la media de millas por galón por cada tipo de transmisión. Si tienes duda sobre las variables, trata con `?mtcars`.
 
+Este es un ejemplo perfecto para usar `group_by` y `summarise`:
+
+```{r}
+mtcars %>%
+  group_by(am) %>%
+  summarise(mpg_avg = mean(mpg))
+```
+
 - Saca la desviación estándar de la potencia (caballos de fuerza), para los distintos números de cilindros. 
+
+```{r}
+mtcars %>%
+  group_by(cyl) %>%
+  summarise(sd_hp = sd(hp))
+```
 
 - Crea una nueva variable que sea la multiplicación de *qsec* y *disp*.
 
+Recordemos que, para crear nuevas variables, basta con usar `mutate`:
+
+```{r}
+mtcars %>%
+  mutate(nueva_var = qsec*disp) 
+```
+
 - Muestrame los 10 valores más altos de la variable `hp`, para los coches de transmisión manual.
+
+Necesitamos tomar sólo los valores de transmisión manual, ordenarlos de manera descendente por la variable `hp`, y luego seleccionar los primeros 10 renglones, y la columna de la variable hp:
+
+```{r}
+mtcars %>%
+  filter(am == 1) %>%
+  arrange(-hp) %>%
+  select(hp) %>%
+  head(10)
+```
+
 
 - ¿Por qué `mtcars %>% select('hp')` no funciona? ¿Qué tendrías que hacer para que funcionara?
  
+Porque `select` no está buscando un string, está buscando el código que me da esa variable. Es decir, no está buscando un nombre, sino un acceso a la variable. Para que funcionara, tendríamos que usar alguna de estas: 
+
+```{r}
+mtcars %>% select_('hp')
+mtcars %>% select(hp)
+```
+
