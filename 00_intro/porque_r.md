@@ -37,7 +37,7 @@ Sus creadores buscan sugerir con esto que R está pensado "como un sistema plane
 
 *  Usar software libre me conecta con una comunidad entera (no por nada R es el 5to lenguaje más popular del mundo, según esta encuesta)
 
-*  Hay una dimensión moral presente en el software que uso
+*  Hay una dimensión moral presente en el software que uso. Si quieren ver un poco más, pueden buscar [aquí](https://www.gnu.org/philosophy/free-sw.es.html)
 
 ### 3. R está hecho para quienes no somos programadores
 A diferencia de lenguajes (poderosísismos) como C, C++ o Julia (abusando un poco de comparaciones), R no está diseñado para quienes dominan la sintáxis, sino para quienes leemos el resultado. Eso nos obliga a ser más cuidadosos, pero también es una ventaja al transitar la curva de aprendizaje, además de que permite realizar operaciones poco convencionales.
