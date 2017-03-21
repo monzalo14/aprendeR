@@ -186,11 +186,9 @@ Una gráfica puede tener muchas capas distintas. En concreto, los componentes de
 
 - Cualquier capa adicional se especifica agregándola a la gráfica inicial.
 
-
 ```{r}
 diamonds %>%
   ggplot() +
   geom_point(aes(carat, price)) +
   theme_bw()
 ```
-

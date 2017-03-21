@@ -1,0 +1,120 @@
+---
+title: "Mi primer Rmd"
+author: "Mónica Zamudio"
+date: "21 de marzo de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+Para efectos de estos ejemplos, vamos a usar la base de datos diamonds, que viene pre-cargada en el paquete `ggplot2`.
+
+**Nota importante: [esta](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf) puede volverse su mejor amiga.** 
+
+Otras referencias:
+
+- [Esto](https://cran.r-project.org/web/packages/ggmosaic/vignettes/ggmosaic.html) es sobre gráficas de mosaico, que mencioné en clase.
+
+-[Esto](http://moderndata.plot.ly/create-colorful-graphs-in-r-with-rcolorbrewer-and-plotly/) es sobre paletas de colores, súper útil.
+
+- [Esto](http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/) es sobre leyendas (las guías de forma/color a lado de la gráfica).
+
+Vamos a crear nuestra primera gráfica. ¡Qué emoción!
+
+## Dos variables continuas
+
+Vamos a usar geom_point para hacer una scatterplot. Notemos que podemos especificar cosas como el color y el nivel de alpha blending (transparencia de nuestros puntos).
+
+```{r}
+diamonds %>%
+ggplot(aes(carat, price)) +
+  geom_point(color = 'red', 
+             alpha = 0.1) +
+  theme_bw()
+```
+
+Podemos añadirle labels (título, subtítulo, ejes) a la gráfica:
+
+```{r}
+diamonds %>%
+  ggplot(aes(carat, price)) + 
+  geom_jitter(alpha = 0.1,
+              color = 'blue') +
+  labs(title = 'Mi segunda gráfica',
+       subtitle = 'ya voy aprendiendo',
+       x = 'Carat',
+       y = 'Precio') +
+  theme_bw()
+```
+
+Vamos ahora a ajustar un modelo lineal. Notemos que podemos modificar los límites de nuestros ejes con las funciones `scale_*_continuous`. También podemos modificar el tamaño de los puntos y el método con el que hacemos la regresión.
+
+```{r}
+diamonds %>%
+  ggplot(aes(carat, price)) +
+  geom_point(size = 0.1) + 
+  geom_smooth(method = 'lm') +
+  scale_x_continuous(limits = c(0, 3)) +
+  scale_y_continuous(limits = c(0, 20000)) +
+  theme_bw()
+```
+
+## Variable categórica y variable continua
+
+Para este tipo de combinaciones, podemos usar cosas como un diagrama de caja y brazos, y controlar el color dada cierta variable:
+
+```{r}
+diamonds %>%
+  ggplot(aes(cut, carat)) +
+  geom_boxplot(aes(group = cut, color = cut)) +
+  theme_bw()
+```
+
+Podemos usar también gráficas de violín. Usar con relleno:
+
+```{r}
+diamonds %>%
+  ggplot(aes(cut, carat)) +
+  geom_violin(aes(group = cut, 
+                  color = cut)) +
+  theme_bw()
+```
+
+Y sin relleno:
+
+```{r}
+diamonds %>%
+  ggplot(aes(cut, carat)) +
+  geom_violin(aes(group = cut, 
+                  color = cut,
+                  fill = cut)) +
+  theme_bw()
+```
+
+## Dos variables categóricas
+
+Podemos usar `geom_count`. Recordemos que para cambiarle las formas que usamos basta con encontrar el código de la forma que queremos (revisen el cheatsheet).
+
+```{r}
+diamonds %>%
+  ggplot(aes(cut, color)) +
+  geom_count(shape = 8) +
+  theme_bw()
+```
+
+Por último, recordemos que podemos usar distintos tipos de facetas, como `facet_grid`, para dividir por alguna variable categórica de interés. Aquí, para cada valor de cut, estamos creando una gráfica de violín para ver la densidad condicional de carat dado claridad.
+
+```{r}
+diamonds %>%
+  ggplot(aes(clarity, carat)) +
+  geom_violin(aes(group = clarity, 
+                  color = clarity,
+                  fill = clarity)) +
+  facet_grid(.~ cut) +
+  theme_bw()
+```
+
