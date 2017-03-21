@@ -48,9 +48,13 @@ Los componentes de una gráfica son ortogonales:
 Los componentes de la gramática de gráficas específica para ggplot son:
 
 1. Una o más capas:
+
     a. Datos y *aesthetic mappings*
+    
     b. UNa transformación estadística
+    
     c. Un objeto geométrico
+    
     d. Ajustes en las posiciones de los objetos
 2. Una escala para cada estética
 3. Un sistema de coordenadas
