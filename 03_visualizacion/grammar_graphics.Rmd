@@ -1,0 +1,196 @@
+---
+title: "ggplot2 y la Gramática de Gráficas"
+author: "Mónica Zamudio"
+date: "21 de marzo de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+```
+
+# Motivación
+
+- ¿Qué es una gráfica?
+
+- ¿Cómo podemos describirla de una manera concisa?
+
+- ¿Cómo podemos crear una gráfica a partir de una descripción?
+
+- ¿Cómo hacemos de este esfuerzo algo sistemático?
+
+# Gramática de gráficas
+
+A raíz de preguntas como estas, surge la idea de desarrollar una gramática:
+
+`Los principios fundamentales de un arte o una ciencia.`
+
+*"A good grammar will allow us to gain insight into the composition of complicated graphics, and reveal unexpected connections between seemingly different graphics."
+
+Cox, 1978*
+
+## Un ejemplo sencillo para empezar
+
+(tomado de [Wickham, 2010. A layered grammar of graphics.](http://vita.had.co.nz/papers/layered-grammar.pdf))
+
+Supongamos que tenemos estos datos: 
+
+```{r}
+set.seed(140693)
+misdatos <- data.frame(a = 1:10/10, 
+                       b = 11:20,
+                       c = rnorm(10)/10,
+                       d = rep(c('a', 'b'), 5))
+
+kable(misdatos)
+```
+
+Digamos que queremos hacer un scatterplot de A contra C, y ponerle formas distintas a los puntos de acuerdo a D. 
+
+R necesita pasar, de alguna manera, de los datos que tenemos a datos que identifiquen la estética de la gráfica. Algo como esto:
+
+```{r, include = F}
+misdatos %>%
+  select(-b) %>%
+  rename(x = a,
+         y = c,
+         forma = d) %>%
+  kable()
+```
+
+Ahora, todavía necesario pasar de esta tabla a una que la computadora pueda trasladar a puntos sobre el plano. Por ejemplo: ¿Qué pasa si la escala para alguna variable es demasiado pequeña? Probablemente no queremos mapear las coordenadas de esa variable tal cual.
+
+Con esta idea en mente, notemos que esta tabla nos permitiría crear muchos tipos de gráfica distintos. Por ejemplo, podemos ajustar cómo nuestra escala traduce los valores de x e y a puntos en el plano, y qué formas tomamos.
+
+```{r, include = F}
+misdatos %>%
+  select(-b) %>%
+  mutate(x = a*10, 
+         y = c*10,
+         forma = ifelse(d == 'a', 'triángulo', 'círculo')) %>%
+  select(x, y, forma) %>%
+  kable()
+```
+
+```{r, include = F}
+misdatos %>%
+  select(-b) %>%
+  mutate(x = a*10, 
+         y = c*20,
+         forma = ifelse(d == 'a', 'cuadrado', 'asterisco')) %>%
+  select(x, y, forma) %>%
+  kable()
+```
+
+**Nota adicional:** Podríamos además incluir transformaciones estadísticas, e.g. ¿qué pasa si quiero agregar, o suavizar una densidad? Mis variables X y Y serían las mismas, pero con una transformación que me permita generar la gráfica que quiero. Así, nuestros datos se verían un poco distintos, en la medida en que decidamos sobre estas transformaciones estadísticas.
+
+La idea central es que la misma tabla de *x*, *y* y forma nos puede ayudar a crear distintas gráficas.
+
+```{r, include = F}
+misdatos %>%
+  mutate(x = a*10, 
+         y = c*10,
+         forma = ifelse(d == 'a', 'triángulo', 'círculo')) %>%
+ggplot() +
+  geom_point(aes(x,y, color = forma, group = forma)) +
+  theme_bw()
+```
+
+```{r, include = F}
+misdatos %>%
+  mutate(x = a*10, 
+         y = c*10,
+         forma = ifelse(d == 'a', 'triángulo', 'círculo')) %>%
+ggplot() +
+  geom_point(aes(x,y, color = forma, group = forma, shape = forma)) +
+  theme_bw()
+```
+
+
+## ¿Qué pasa si quiero que mis datos generen dos gráficas?
+
+```{r}
+misdatos %>%
+  select(-b) %>%
+  mutate(x = a*10, 
+         y = c*20,
+         forma = ifelse(d == 'a', 'cuadrado', 'asterisco'),
+         grafica = ifelse(d == 'a', 1, 2)) %>%
+  select(x, y, forma, grafica) %>%
+  kable()
+```
+
+Así, incluimos un criterio adicional a la gramática de gráficas: las "facetas" o "caras", que son simplemente subgráficas de una gráfica.
+
+```{r}
+misdatos %>%
+  select(-b) %>%
+  mutate(x = a*10, 
+         y = c*20,
+         forma = ifelse(d == 'a', 'cuadrado', 'asterisco'),
+         grafica = ifelse(d == 'a', 1, 2)) %>%
+ ggplot() +
+  geom_point(aes(x,y, color = forma, group = forma, shape = forma)) +
+  facet_grid(.~forma) +
+  theme_bw() 
+```
+
+### Entonces, recapitulando...
+
+Tenemos varios elementos que nos ayudan a generar la geometría de la gráfica: 
+
+- Los datos
+
+- Las transformaciones que hagamos de ellos
+
+- Los objetos geométricos
+
+- Las escalas y el sistema de coordenadas
+
+- Las facetas 
+
+Además, la gramática de gráficas nos permite tener más de una capa, que incluso podría estar generada por datos distintos. Para pensar en esta idea de muchas capas, los autores de esto lo generalizaron a la siguiente idea:
+
+Una gráfica puede tener muchas capas distintas. En concreto, los componentes de una gráfica se definen como:
+
+- Un dataset y un mapeo de variables a la estética
+
+- Una o más capas. Cada capa contiene (al menos): 
+
+    - Un objeto geométrico
+    
+    - Una transformación estadística
+    
+    - Un ajuste de posición
+
+- Una escala para cada mapeo (el tamaño de los puntos, la escala de colores, etc.)
+
+- Un sistema de coordenadas
+
+- Una especificación de facetas
+
+**Notemos cómo los elementos de las capas son independientes entre sí.**
+
+# ggplot2: la implementación de Gramática de Gráficas en R
+
+**Nota: Para los ejemplos de esta clase, vamos a usar la base de datos *diamonds**
+
+- Los ggplots son un objeto. Eso quiere decir que se pueden nombrar, escribir a un archivo y guardar en un RData.
+
+- El sistema de coordenadas es transversal a todas las capas de la gráfica, por lo que se llama al instanciar un objeto `ggplot()` (que va antes de todas las capas)
+
+- Los objetos geométricos son especificados a través de los `geom()`, que contienen su mapeo estético y transformaciones.
+
+- 
+
+
+```{r}
+diamonds %>%
+  ggplot() +
+  geom_point(aes(carat, price)) +
+  theme_bw()
+```
+

@@ -258,31 +258,3 @@ ggplot(mix2norm, aes(x=x, color = grp)) +
 ```
 
 Ve el help de `facet_wrap`
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
