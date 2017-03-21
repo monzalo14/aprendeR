@@ -184,7 +184,7 @@ Una gráfica puede tener muchas capas distintas. En concreto, los componentes de
 
 - Los objetos geométricos son especificados a través de los `geom()`, que contienen su mapeo estético y transformaciones.
 
-- 
+- Cualquier capa adicional se especifica agregándola a 
 
 
 ```{r}
