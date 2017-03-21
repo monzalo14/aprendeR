@@ -5,7 +5,7 @@ date: "21 de marzo de 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 library(dplyr)
@@ -52,7 +52,7 @@ Digamos que queremos hacer un scatterplot de A contra C, y ponerle formas distin
 
 R necesita pasar, de alguna manera, de los datos que tenemos a datos que identifiquen la estética de la gráfica. Algo como esto:
 
-```{r, include = F}
+```{r}
 misdatos %>%
   select(-b) %>%
   rename(x = a,
@@ -184,7 +184,7 @@ Una gráfica puede tener muchas capas distintas. En concreto, los componentes de
 
 - Los objetos geométricos son especificados a través de los `geom()`, que contienen su mapeo estético y transformaciones.
 
-- Cualquier capa adicional se especifica agregándola a 
+- Cualquier capa adicional se especifica agregándola a la gráfica inicial.
 
 
 ```{r}
