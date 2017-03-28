@@ -1,0 +1,99 @@
+---
+title: "Modelos Estadísticos en R"
+author: "Mónica Zamudio"
+date: "28 de marzo de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(tab)
+library(lmtest)
+library(sandwich)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ¿Cómo genero un modelo?
+
+En R, prácticamente todos los modelos paramétricos son creados a través de fórmulas. Las fórmulas son un tipo particular de objeto que (generalmente) señala la relación de dependencia entre la variable dependiente y las variables explicativas.
+
+Así, la mayoría de los modelos paramétricos necesitan al menos dos argumentos de entrada: un set de datos y una fórmula que defina cómo utilizar esos datos. 
+
+## Primera prueba: modelos lineales
+
+```{r}
+diamonds %>%
+  lm(price ~ carat, data = .)
+```
+
+Tenemos maneras de obtener más información sobre el resultado de nuestro modelo: 
+
+```{r}
+diamonds %>%
+  lm(price ~ carat, data = .) %>%
+  summary()
+```
+
+Tenemos además maneras de volver el output más bonito y claro:
+
+```{r}
+diamonds %>%
+  glm(price ~ carat, data = ., family = 'gaussian') %>%
+  tabglm()
+```
+
+Podemos además correrle pruebas de heterocedasticidad a nuestro modelo:
+
+```{r}
+diamonds %>%
+  lm(price ~ carat, data = .) %>%
+  coeftest(., vcov = vcovHC(., "HC1"))
+```
+
+Nuestra barra: el modelo nulo
+
+```{r}
+diamonds %>%
+  lm(price ~ 1, data = .) %>%
+  summary()
+```
+
+Podemos además revisar la distribución de los errores, para confirmar que nuestro modelo no esté sesgado
+
+```{r}
+modelo <- diamonds %>%
+  lm(price ~ carat, data = .)
+
+qplot(modelo$residuals) +
+  theme_bw()
+```
+
+## Otros modelos: la familia glm
+
+Vamos a generar unos datos con algna variable binaria:
+
+```{r}
+mis_datos <- diamonds %>%
+              mutate(good_cut = as.numeric(cut == 'Very Good' | cut == 'Premium'))
+```
+
+Un modelo probit se vería así:
+
+```{r}
+logit <- glm(good_cut ~ carat + price + x, family = binomial(link = 'logit'), data = mis_datos) 
+summary(logit)
+```
+
+Mientras que un modelo probit se vería así:
+
+```{r}
+logit <- glm(good_cut ~ carat + price + x, family = binomial(link = 'probit'), data = mis_datos) 
+summary(probit)
+```
+
+## Ejercicio práctico
+
+Tomemos la base de datos de la calculadora:
+
