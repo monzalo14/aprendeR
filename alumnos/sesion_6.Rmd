@@ -25,6 +25,8 @@ Otras referencias:
 
 -[Esto](http://sharpsightlabs.com/blog/format-titles-and-axes-in-ggplot2/) ayuda mucho para todo lo que tiene que ver con labels en tu gráfica
 
+-[Esto](http://sape.inf.usi.ch/quick-reference/ggplot2/colour) para referencias de colores en R.
+
 Vamos a crear nuestra primera gráfica. ¡Qué emoción!
 
 ## Dos variables continuas
