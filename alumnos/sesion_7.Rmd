@@ -25,7 +25,7 @@ Así, la mayoría de los modelos paramétricos necesitan al menos dos argumentos
 
 ```{r}
 diamonds %>%
-  lm(price ~ carat, data = .)
+  lm(price ~ carat + x + y, data = .)
 ```
 
 Tenemos maneras de obtener más información sobre el resultado de nuestro modelo: 
@@ -40,7 +40,8 @@ Tenemos además maneras de volver el output más bonito y claro:
 
 ```{r}
 diamonds %>%
-  glm(price ~ carat, data = ., family = 'gaussian') %>%
+  glm(price ~ carat, data = ., 
+      family = 'gaussian') %>%
   tabglm()
 ```
 
@@ -60,7 +61,18 @@ diamonds %>%
   summary()
 ```
 
-Podemos además revisar la distribución de los errores, para confirmar que nuestro modelo no esté sesgado
+Podemos también predecir a partir de nuestro modelo:
+
+```{r}
+diamonds %>%
+  lm(price ~ carat, data = .) -> mi_modelo
+
+mis_datos <- data.frame(carat = rnorm(200))
+
+predict(mi_modelo, mis_datos) -> y_gorro
+```
+
+Podemos además revisar la distribución de los errores, para confirmar que nuestro modelo no esté sesgado:
 
 ```{r}
 modelo <- diamonds %>%
@@ -72,14 +84,14 @@ qplot(modelo$residuals) +
 
 ## Otros modelos: la familia glm
 
-Vamos a generar unos datos con algna variable binaria:
+Vamos a generar unos datos con alguna variable binaria:
 
 ```{r}
 mis_datos <- diamonds %>%
-              mutate(good_cut = as.numeric(cut == 'Very Good' | cut == 'Premium'))
+              mutate(good_cut = as.numeric(cut == 'Premium' | cut == 'Ideal'))
 ```
 
-Un modelo probit se vería así:
+Un modelo logit se vería así:
 
 ```{r}
 logit <- glm(good_cut ~ carat + price + x, family = binomial(link = 'logit'), data = mis_datos) 
@@ -97,3 +109,14 @@ summary(probit)
 
 Tomemos la base de datos de la calculadora:
 
+```{r}
+df <- readRDS('../../calculadora/clean_data/observaciones.RDS')
+```
+
+Estima un modelo lineal para predecir liq_total (la variable que indica cuánto se gana al final del juicio).
+
+## Joins
+
+Puedes recordar un poco sobre lo que vimos [aquí](https://www.codeproject.com/Articles/33052/Visual-Representation-of-SQL-Joins), para la idea de los Diagramas de Venn, y [aquí](http://stat545.com/bit001_dplyr-cheatsheet.html) para entender la sintáxis de `dplyr`. 
+
+Recuerda que los Diagramas de Venn representan las filas que se quedan después del join.

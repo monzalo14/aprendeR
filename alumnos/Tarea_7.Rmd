@@ -1,0 +1,64 @@
+---
+title: "Tarea 7"
+author: "Mónica Zamudio"
+date: "28 de marzo de 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Graficación
+
+Toma la base de datos `mtcars`. 
+
+1. Muéstrame la distribución de millas por galón, para cada tipo de cilindrada. Usa un diagrama de caja y brazos o una gráfica de violín.
+
+2. Grafica la distribución de caballos de fuerza. 
+
+3. Muéstrame cómo se ve la distribución de carburadores para cada tipo de transmisión.
+
+4. Muéstrame la distribución conjunta de peso contra *displacement*. 
+
+5. Haz una gráfica de barras que muestre las frecuencias absolutas de cada número de carburadores. Nota que no tienes la variable 'frecuencia' como tal.
+
+# Joins
+
+Corre este código para generar los datos con los que vamos a trabajar:
+
+```{r}
+library(readr)
+```
+
+```{r}
+superheroes <- '
+    name, alignment, gender,         publisher
+ Magneto,       bad,   male,            Marvel
+   Storm,      good, female,            Marvel
+Mystique,       bad, female,            Marvel
+  Batman,      good,   male,                DC
+   Joker,       bad,   male,                DC
+Catwoman,       bad, female,                DC
+ Hellboy,      good,   male, Dark Horse Comics
+'
+superheroes <- read_csv(superheroes, trim_ws = TRUE, skip = 1)
+
+publishers <- '
+  publisher, yr_founded
+         DC,       1934
+     Marvel,       1939
+      Image,       1992
+'
+publishers <- read_csv(publishers, trim_ws = TRUE, skip = 1)
+```
+
+1. Dame una tabla con todos los superhéroes que salen en cómics de editoriales fundadas antes de los años 90.
+
+2. Junta ambas tablas, asegurándote de aparezcan todas las editoriales.
+
+3. ¿Cuáles editoriales no tienen a **ningún** superhéroe de la tabla? Muéstrame el resultado a través de un `join`.
+
+4. Prueba haciendo un `full_join`. ¿Qué crees que está haciendo esta función?
